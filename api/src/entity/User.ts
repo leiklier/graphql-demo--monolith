@@ -6,7 +6,7 @@ import { Column, Entity, PrimaryGeneratedColumn } from 'typeorm';
 export class User {
 	@Field((type) => ID)
 	@PrimaryGeneratedColumn('uuid')
-	readonly id!: string;
+	readonly id: string;
 
 	@Field()
 	@Column()
@@ -19,4 +19,7 @@ export class User {
 	@Field()
 	@Column()
 	email: string;
+
+	@Column()
+	hashedPassword: string;
 }

@@ -10,15 +10,21 @@ import 'reflect-metadata';
 import { buildSchema } from 'type-graphql';
 import { UserResolver } from './resolver/UserResolver';
 import { initializeDatabases } from './database/initialize';
+import Container from 'typedi';
+import { context } from './context';
+import { AuthResolver } from './resolver/AuthResolver';
 
 const PORT = 4000;
 const { NODE_ENV } = process.env;
 
 async function main() {
+	console.log('Initializing server...');
+
 	await initializeDatabases(NODE_ENV || 'production');
 
 	const graphqlSchema = await buildSchema({
-		resolvers: [UserResolver],
+		resolvers: [AuthResolver, UserResolver],
+		container: Container,
 	});
 
 	const app = express();
@@ -28,7 +34,7 @@ async function main() {
 	const server: ApolloServer = new ApolloServer({
 		schema: graphqlSchema,
 		csrfPrevention: true,
-		context: () => {},
+		context,
 		introspection: NODE_ENV === 'develop',
 		plugins: [
 			// Enable GraphQL Playground:
