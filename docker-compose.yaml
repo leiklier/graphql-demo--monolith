@@ -1,0 +1,26 @@
+version: "3.9"
+services:
+  api:
+      build: 
+        context: ./api
+      ports:
+        - "4000:4000" # (app)
+        - "9990:9229" # (debug)
+      volumes:
+        - ./api/src:/app/src:ro
+        - ./api/package.json:/app/package.json:rw
+        - ./api/package-lock.json:/app/package-lock.json:rw
+  web:
+    build: 
+      context: ./web
+      args:
+        FRONTEND_API_HTTP_ENDPOINT: http://localhost:4000/graphql
+        FRONTEND_API_WS_ENDPOINT: ws://localhost:4000/graphql
+    ports:
+      - "3000:3000" # (app)
+      - "9991:9229" # (debug)
+    volumes:
+      - ./web/public:/app/public:ro
+      - ./web/src:/app/src:ro
+      - ./web/package.json:/app/package.json:rw
+      - ./web/package-lock.json:/app/package-lock.json:rw
