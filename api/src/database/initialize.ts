@@ -8,11 +8,7 @@ export async function initializeDatabases(NODE_ENV: string) {
 
 	switch (NODE_ENV) {
 		case 'develop':
-			// Wipe databases:
-			await PostgresDataSource.dropDatabase();
-			// Synchronize schemas:
-			await PostgresDataSource.synchronize();
-			// Seed databases:
+			// Seed databases with some sample data:
 			useDataSource(PostgresDataSource);
 			useSeeders(InitSeeder);
 			break;

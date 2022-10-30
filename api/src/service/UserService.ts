@@ -6,7 +6,15 @@ import { UserRepository } from '../repository/UserRepository';
 export class UserService {
 	constructor(private readonly userRepository: UserRepository) {}
 
-	findOneByEmail(email: string): Promise<User | null> {
+	async getOneByEmail(email: string): Promise<User | null> {
 		return this.userRepository.findOneByEmail(email);
+	}
+
+	async getSelfById(ownUserId?: string): Promise<User | null> {
+		if (!ownUserId) {
+			return null;
+		}
+
+		return this.userRepository.findOneById(ownUserId);
 	}
 }

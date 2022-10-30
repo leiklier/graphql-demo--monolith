@@ -6,6 +6,7 @@ const {
 	POSTGRES_USER,
 	POSTGRES_PASSWORD,
 	POSTGRES_DB,
+	NODE_ENV,
 } = process.env;
 
 export const PostgresDataSource = new DataSource({
@@ -19,6 +20,6 @@ export const PostgresDataSource = new DataSource({
 	migrations: ['src/database/migrations/**/*.ts'],
 	logger: 'advanced-console',
 	logging: 'all',
-	dropSchema: true,
-	cache: true,
+	dropSchema: NODE_ENV === 'develop',
+	synchronize: NODE_ENV === 'develop',
 });

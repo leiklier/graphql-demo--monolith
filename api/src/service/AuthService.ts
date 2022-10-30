@@ -24,7 +24,8 @@ export class AuthService {
 			throw error.INVALID_PASSWORD;
 		}
 
-		const expiresAt: number = Date.now() + 1000 * 60 * 60 * 24 * 30; // 30 days
+		// 30 days expiry
+		const expiresAt: number = Date.now() + 1000 * 60 * 60 * 24 * 30;
 		const token = jwt.sign(
 			{
 				payload: {

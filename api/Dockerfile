@@ -40,4 +40,4 @@ RUN npm install && npm cache clean --force
 # This has to be done in `docker-compose.yaml` as a bind mount
 
 # Restart on file changes
-CMD ts-node-dev --respawn --inspect=0.0.0.0:9229 src/server.ts
+CMD ts-node-dev --respawn --transpile-only --inspect=0.0.0.0:9229 src/server.ts
