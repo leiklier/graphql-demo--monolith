@@ -16,7 +16,6 @@ export class UserResolver {
 
 	@Query((returns) => User, { nullable: true })
 	async me(@Ctx() { userId }: ContextValue): Promise<User | null> {
-		console.log({ userId });
 		return this.userService.getSelfById(userId);
 	}
 

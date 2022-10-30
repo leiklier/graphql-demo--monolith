@@ -15,8 +15,8 @@ export class UserFactory extends Factory<User> {
 		const lastName = faker.name.lastName();
 		return {
 			id: faker.datatype.uuid(),
-			firstName: () => faker.name.firstName(),
-			lastName: () => faker.name.lastName(),
+			firstName: faker.name.firstName(),
+			lastName: faker.name.lastName(),
 			email: faker.internet.email(firstName, lastName),
 			hashedPassword: bcrypt.hashSync(password, salt),
 		};

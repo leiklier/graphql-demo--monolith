@@ -13,6 +13,7 @@ import { initializeDatabases } from './database/initialize';
 import Container from 'typedi';
 import { context } from './context';
 import { AuthResolver } from './resolver/AuthResolver';
+import { BookResolver } from './resolver/BookResolver';
 
 const PORT = 4000;
 const { NODE_ENV } = process.env;
@@ -23,7 +24,7 @@ async function main() {
 	await initializeDatabases(NODE_ENV || 'production');
 
 	const graphqlSchema = await buildSchema({
-		resolvers: [AuthResolver, UserResolver],
+		resolvers: [AuthResolver, UserResolver, BookResolver],
 		container: Container,
 	});
 
