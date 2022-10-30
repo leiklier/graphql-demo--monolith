@@ -1,15 +1,15 @@
 import { ExpressContext } from 'apollo-server-express';
+import { v4 as uuidv4 } from 'uuid';
+
 import jwt from 'jsonwebtoken';
 const { JWT_SECRET } = process.env;
-export interface ContextValue {
+export interface TContext {
+	requestId: string;
 	userId?: string;
 }
 
-export async function context({
-	req,
-	res,
-}: ExpressContext): Promise<ContextValue> {
-	const contextValue: ContextValue = {};
+export async function context({ req, res }: ExpressContext): Promise<TContext> {
+	const contextValue: TContext = { requestId: uuidv4() };
 
 	let token: string | undefined;
 	// HTTP authentication:

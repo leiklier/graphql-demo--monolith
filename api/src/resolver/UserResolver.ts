@@ -1,6 +1,6 @@
 import { Arg, Ctx, Query, Resolver } from 'type-graphql';
 import { Service } from 'typedi';
-import { ContextValue } from '../context';
+import { TContext } from '../context';
 import { User } from '../entity/User';
 import { UserService } from '../service/UserService';
 
@@ -15,7 +15,7 @@ export class UserResolver {
 	}
 
 	@Query((returns) => User, { nullable: true })
-	async me(@Ctx() { userId }: ContextValue): Promise<User | null> {
+	async me(@Ctx() { userId }: TContext): Promise<User | null> {
 		return this.userService.getSelfById(userId);
 	}
 
