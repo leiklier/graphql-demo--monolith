@@ -37,6 +37,7 @@ services:
       - POSTGRES_PASSWORD
       - POSTGRES_DB
       - JWT_SECRET
+      - ACCESS_CONTROL_ALLOW_ORIGIN=http://localhost:3000
     ports:
       - "4000:4000" # (app)
       - "9990:9229" # (debug)
@@ -51,11 +52,14 @@ services:
       args:
         FRONTEND_API_HTTP_ENDPOINT: http://localhost:4000/graphql
         FRONTEND_API_WS_ENDPOINT: ws://localhost:4000/graphql
+    depends_on:
+      # TODO: Create a readiness probe for api
+      - api # (GraphQL codegen uses schema introspection)
     ports:
       - "3000:3000" # (app)
       - "9991:9229" # (debug)
     volumes:
-      - ./web/src:/app/src:ro
+      - ./web/src:/app/src:rw # (write access needed for graphql_codegen)
       - ./web/public:/app/public:ro
       - ./web/node_modules:/app/node_modules:rw
       - ./web/package.json:/app/package.json:rw

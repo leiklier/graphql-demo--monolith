@@ -5,11 +5,14 @@ import jwt from 'jsonwebtoken';
 const { JWT_SECRET } = process.env;
 export interface TContext {
 	requestId: string;
-	userId?: string;
+	authenticatedUserId: string | null;
 }
 
 export async function context({ req, res }: ExpressContext): Promise<TContext> {
-	const contextValue: TContext = { requestId: uuidv4() };
+	const contextValue: TContext = {
+		requestId: uuidv4(),
+		authenticatedUserId: null,
+	};
 
 	let token: string | undefined;
 	// HTTP authentication:
@@ -27,7 +30,7 @@ export async function context({ req, res }: ExpressContext): Promise<TContext> {
 		const decryptedToken = jwt.verify(token, JWT_SECRET!) as jwt.JwtPayload;
 		const tokenPayload = decryptedToken.payload;
 		const { userId } = tokenPayload;
-		contextValue.userId = userId;
+		contextValue.authenticatedUserId = userId;
 	}
 
 	return contextValue;

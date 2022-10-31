@@ -1,5 +1,6 @@
 import { Field, ID, ObjectType } from 'type-graphql';
-import { Column, Entity, PrimaryGeneratedColumn } from 'typeorm';
+import { Column, Entity, ManyToMany, PrimaryGeneratedColumn } from 'typeorm';
+import { User } from './User';
 
 @ObjectType({ description: 'A book that can be bought for the given priceUSD' })
 @Entity()
@@ -19,4 +20,7 @@ export class Book {
 	@Field({ description: 'The price of the book given in USD' })
 	@Column()
 	priceUSD: number;
+
+	@ManyToMany((relationTo) => User, (user) => user.booksOwning)
+	usersOwnedBy: User[];
 }

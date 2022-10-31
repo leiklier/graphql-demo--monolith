@@ -10,11 +10,11 @@ export class UserService {
 		return this.userRepository.findOneByEmail(email);
 	}
 
-	async getSelfById(ownUserId?: string): Promise<User | null> {
-		if (!ownUserId) {
+	async getSelfById(authenticatedUserId: string | null): Promise<User | null> {
+		if (!authenticatedUserId) {
 			return null;
 		}
 
-		return this.userRepository.findOneById(ownUserId);
+		return this.userRepository.findOneById(authenticatedUserId);
 	}
 }

@@ -1,5 +1,12 @@
 import { Field, ID, ObjectType } from 'type-graphql';
-import { Column, Entity, PrimaryGeneratedColumn } from 'typeorm';
+import {
+	Column,
+	Entity,
+	JoinTable,
+	ManyToMany,
+	PrimaryGeneratedColumn,
+} from 'typeorm';
+import { Book } from './Book';
 
 @ObjectType()
 @Entity()
@@ -22,4 +29,9 @@ export class User {
 
 	@Column()
 	hashedPassword: string;
+
+	@Field((of) => [Book])
+	@ManyToMany((relationTo) => Book, (book) => book.usersOwnedBy)
+	@JoinTable()
+	booksOwning: Book[];
 }

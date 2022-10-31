@@ -17,9 +17,9 @@ export const PostgresDataSource = new DataSource({
 	port: parseInt(POSTGRES_PORT as string),
 	host: POSTGRES_HOST, // and host
 	entities: ['src/entity/**/*.ts'],
-	migrations: ['src/database/migrations/**/*.ts'],
+	migrations: ['src/database/migration/**/*.ts'],
 	logger: 'advanced-console',
-	logging: 'all',
+	logging: false,
 	dropSchema: NODE_ENV === 'develop',
 	synchronize: NODE_ENV === 'develop',
 });

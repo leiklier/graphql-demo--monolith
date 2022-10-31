@@ -9,4 +9,15 @@ export class BookService {
 	async getAll(): Promise<Book[]> {
 		return this.bookRepository.findAll();
 	}
+
+	async getBooksOwnedByUser(
+		userId: string,
+		authenticatedUserId: string | null,
+	): Promise<Book[]> {
+		const isSelf = userId === authenticatedUserId;
+		if (!isSelf) {
+			return [];
+		}
+		return this.bookRepository.findManyByUserId(userId);
+	}
 }

@@ -25,6 +25,14 @@ export class BookRepository {
 		return (await this.bookLoader.loadMany(ids)) as Book[];
 	}
 
+	async findManyByUserId(userId: string): Promise<Book[]> {
+		return this.bookRepository
+			.createQueryBuilder('book')
+			.leftJoin('book.usersOwnedBy', 'user')
+			.where('user.id = :userId', { userId })
+			.getMany();
+	}
+
 	async findAll(): Promise<Book[]> {
 		return this.bookRepository.find();
 	}

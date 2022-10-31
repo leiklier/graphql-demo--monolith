@@ -1,0 +1,7 @@
+query allBooks {
+	allBooks {
+		id
+		title
+		priceUSD
+	}
+}
