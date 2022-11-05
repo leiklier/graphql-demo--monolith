@@ -20,7 +20,7 @@ ENV NODE_ENV develop
 EXPOSE 4000 9229
 
 # This is where our app lives
-RUN mkdir /app && chown -R node:node /app
+RUN mkdir /app
 WORKDIR /app
 
 # Use root user to avoid permission
@@ -30,10 +30,11 @@ USER root
 
 # Install packages before bundling
 # to take advantage of cached layers
-COPY --chown=node:node package.json package-lock.json ./
+COPY --chown=node:node package.json package-lock.json codegen.ts tsconfig.json ./
 RUN npm install && npm cache clean --force
+
+
 
 # NB: Notice that no application is bundled!
 # This has to be done in `docker-compose.yaml` as a bind mount
-
-ENTRYPOINT ["npm", "start"]
+ENTRYPOINT npm run watch graphql_codegen & npm start

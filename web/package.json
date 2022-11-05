@@ -1,45 +1,63 @@
 {
-  "name": "graphql-demo--web",
-  "version": "1.0.0",
-  "description": "",
-  "private": true,
-  "author": "Leik Lima-Eriksen",
-  "dependencies": {
-    "@testing-library/jest-dom": "^5.16.5",
-    "@testing-library/react": "^13.4.0",
-    "@testing-library/user-event": "^13.5.0",
-    "@types/jest": "^27.5.2",
-    "@types/node": "^16.18.2",
-    "@types/react": "^18.0.24",
-    "@types/react-dom": "^18.0.8",
-    "react": "^18.2.0",
-    "react-dom": "^18.2.0",
-    "react-scripts": "5.0.1",
-    "typescript": "^4.8.4",
-    "web-vitals": "^2.1.4"
-  },
-  "scripts": {
-    "start": "react-scripts start",
-    "build": "react-scripts build",
-    "test": "react-scripts test",
-    "eject": "react-scripts eject"
-  },
-  "eslintConfig": {
-    "extends": [
-      "react-app",
-      "react-app/jest"
-    ]
-  },
-  "browserslist": {
-    "production": [
-      ">0.2%",
-      "not dead",
-      "not op_mini all"
-    ],
-    "development": [
-      "last 1 chrome version",
-      "last 1 firefox version",
-      "last 1 safari version"
-    ]
-  }
+	"name": "graphql-demo--web",
+	"version": "1.0.0",
+	"description": "",
+	"private": true,
+	"author": "Leik Lima-Eriksen",
+	"dependencies": {
+		"@apollo/client": "^3.7.1",
+		"@testing-library/jest-dom": "^5.16.5",
+		"@testing-library/react": "^13.4.0",
+		"@testing-library/user-event": "^13.5.0",
+		"@types/jest": "^27.5.2",
+		"@types/node": "^16.18.2",
+		"@types/react": "^18.0.24",
+		"@types/react-dom": "^18.0.8",
+		"graphql": "^16.6.0",
+		"react": "^18.2.0",
+		"react-dom": "^18.2.0",
+		"react-scripts": "5.0.1",
+		"typescript": "^4.8.4",
+		"web-vitals": "^2.1.4"
+	},
+	"devDependencies": {
+		"@graphql-codegen/cli": "^2.13.11",
+		"@graphql-codegen/typescript-operations": "^2.5.6",
+		"@graphql-codegen/typescript-react-apollo": "^3.3.5",
+		"npm-watch": "^0.11.0"
+	},
+	"watch": {
+		"graphql_codegen": {
+			"patterns": [
+				"src"
+			],
+			"extensions": "graphql"
+		}
+	},
+	"scripts": {
+		"start": "react-scripts start",
+		"watch": "npm-watch",
+		"graphql_codegen": "npx graphql-codegen --config codegen.ts --errors-only; exit 0",
+		"build": "react-scripts build",
+		"test": "react-scripts test",
+		"eject": "react-scripts eject"
+	},
+	"eslintConfig": {
+		"extends": [
+			"react-app",
+			"react-app/jest"
+		]
+	},
+	"browserslist": {
+		"production": [
+			">0.2%",
+			"not dead",
+			"not op_mini all"
+		],
+		"development": [
+			"last 1 chrome version",
+			"last 1 firefox version",
+			"last 1 safari version"
+		]
+	}
 }
