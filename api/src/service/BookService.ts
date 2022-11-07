@@ -20,4 +20,14 @@ export class BookService {
 		}
 		return this.bookRepository.findManyByUserId(userId);
 	}
+
+	async getBooksOwnedBySelf(
+		authenticatedUserId: string | null,
+	): Promise<Book[]> {
+		if (!authenticatedUserId) {
+			return [];
+		}
+
+		return this.getBooksOwnedByUser(authenticatedUserId, authenticatedUserId);
+	}
 }

@@ -22,11 +22,6 @@ export class UserResolver {
 		return this.bookService.getBooksOwnedByUser(user.id, authenticatedUserId);
 	}
 
-	@Query((returns) => String)
-	hello(): string {
-		return 'hi!';
-	}
-
 	@Query((returns) => User, { nullable: true })
 	async me(@Ctx() { authenticatedUserId }: TContext): Promise<User | null> {
 		return this.userService.getSelfById(authenticatedUserId);

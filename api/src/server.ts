@@ -18,6 +18,7 @@ import Container from 'typedi';
 import { context, TContext } from './context';
 import { AuthResolver } from './resolver/AuthResolver';
 import { BookResolver } from './resolver/BookResolver';
+import { SaleResolver } from './resolver/SaleResolver';
 
 const PORT = 4000;
 const { NODE_ENV } = process.env;
@@ -28,7 +29,7 @@ async function main() {
 	await initializeDatabases(NODE_ENV || 'production');
 
 	const graphqlSchema = await buildSchema({
-		resolvers: [AuthResolver, UserResolver, BookResolver],
+		resolvers: [AuthResolver, SaleResolver, UserResolver, BookResolver],
 		// Create new services (DI/IOC) for each request:
 		container: ({ context }: ResolverData<TContext>) =>
 			Container.of(context.requestId),

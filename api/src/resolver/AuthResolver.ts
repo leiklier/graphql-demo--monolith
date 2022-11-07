@@ -1,18 +1,7 @@
-import { IsEmail, MinLength } from 'class-validator';
-import { Args, ArgsType, Field, Query, Resolver } from 'type-graphql';
+import { Args, Query, Resolver } from 'type-graphql';
 import { Service } from 'typedi';
+import { LoginArgs } from '../interface/auth';
 import { AuthService } from '../service/AuthService';
-
-@ArgsType()
-export class LoginArgs {
-	@Field()
-	@IsEmail()
-	email: string;
-
-	@Field()
-	@MinLength(8)
-	password: string;
-}
 
 @Service()
 @Resolver()

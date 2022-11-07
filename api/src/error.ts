@@ -1,6 +1,6 @@
-import { ApolloError } from 'apollo-server-core';
-
 export const error = {
-	INVALID_EMAIL: new ApolloError('Invalid email'),
-	INVALID_PASSWORD: new ApolloError('Invalid password'),
+	INVALID_EMAIL: 'Invalid email',
+	INVALID_PASSWORD: 'Invalid password',
+	NOT_AUTHENTICATED: 'User not authenticated',
+	NOT_AUTHORIZED: 'User not authorized',
 };
