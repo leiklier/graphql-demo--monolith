@@ -1,0 +1,11 @@
+query myBooks {
+	me {
+		id
+		booksOwning {
+			id
+			title
+			author
+			priceUSD
+		}
+	}
+}

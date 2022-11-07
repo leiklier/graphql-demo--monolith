@@ -11,7 +11,10 @@ export class BookResolver {
 	@Query((returns) => [Book], {
 		description: 'Get all books that are stored in the system',
 	})
-	async allBooks(): Promise<Book[]> {
+	async booksInStore(): Promise<Book[]> {
+		// We might change this to a more specific service
+		// once we implement the concept of a store, but
+		// the Query name will always stay the same:
 		return this.bookService.getAll();
 	}
 }

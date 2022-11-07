@@ -1,0 +1,8 @@
+query booksInStore {
+	booksInStore {
+		id
+		title
+		author
+		priceUSD
+	}
+}
