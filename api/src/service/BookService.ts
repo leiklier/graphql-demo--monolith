@@ -6,8 +6,25 @@ import { BookRepository } from '../repository/BookRepository';
 export class BookService {
 	constructor(private readonly bookRepository: BookRepository) {}
 
-	async getAll(): Promise<Book[]> {
+	async getAllBooks(): Promise<Book[]> {
 		return this.bookRepository.findAll();
+	}
+
+	async getBooksInStore(authenticatedUserId: string | null): Promise<Book[]> {
+		let bookIdsOwnedBySelf: string[] = [];
+		if (authenticatedUserId) {
+			bookIdsOwnedBySelf = (
+				await this.bookRepository.findManyByUserId(authenticatedUserId)
+			).map((book) => book.id);
+		}
+
+		const allBooks = await this.bookRepository.findAll();
+
+		const booksNotOwnedBySelf = allBooks.filter(
+			(book) => !bookIdsOwnedBySelf.includes(book.id),
+		);
+
+		return booksNotOwnedBySelf;
 	}
 
 	async getBooksOwnedByUser(

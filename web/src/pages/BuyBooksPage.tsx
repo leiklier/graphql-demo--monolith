@@ -14,8 +14,30 @@ export const BuyBooksPage: React.FC = () => {
 	const { data: userInfoData } = useUserInfoQuery();
 	const { data: myBooksData } = useMyBooksQuery();
 	const { data: booksInStoreData } = useBooksInStoreQuery();
-	const [sellBook] = useSellBookMutation();
-	const [buyBook] = useBuyBookMutation();
+	const [sellBook] = useSellBookMutation({
+		update(cache, result) {
+			cache.evict({ fieldName: 'booksInStore' });
+			const userId = result.data?.sellBook.userSelling?.id;
+			if (userId) {
+				cache.evict({
+					id: `User:${userId}`,
+					fieldName: 'booksOwning',
+				});
+			}
+		},
+	});
+	const [buyBook] = useBuyBookMutation({
+		update(cache, result) {
+			cache.evict({ fieldName: 'booksInStore' });
+			const userId = result.data?.buyBook.userBuying?.id;
+			if (userId) {
+				cache.evict({
+					id: `User:${userId}`,
+					fieldName: 'booksOwning',
+				});
+			}
+		},
+	});
 	return (
 		<>
 			<NavBar />

@@ -1,5 +1,6 @@
-import { Query, Resolver } from 'type-graphql';
+import { Ctx, Query, Resolver } from 'type-graphql';
 import { Service } from 'typedi';
+import { TContext } from '../context';
 import { Book } from '../entity/Book';
 import { BookService } from '../service/BookService';
 
@@ -9,12 +10,11 @@ export class BookResolver {
 	constructor(private readonly bookService: BookService) {}
 
 	@Query((returns) => [Book], {
-		description: 'Get all books that are stored in the system',
+		description: 'Get all books that are available in the store',
 	})
-	async booksInStore(): Promise<Book[]> {
-		// We might change this to a more specific service
-		// once we implement the concept of a store, but
-		// the Query name will always stay the same:
-		return this.bookService.getAll();
+	async booksInStore(
+		@Ctx() { authenticatedUserId }: TContext,
+	): Promise<Book[]> {
+		return this.bookService.getBooksInStore(authenticatedUserId);
 	}
 }
