@@ -3,6 +3,7 @@ import { error } from '../error';
 import { UserRepository } from '../repository/UserRepository';
 import bcrypt from 'bcryptjs';
 import jwt from 'jsonwebtoken';
+import { TContext } from '../context';
 
 const { JWT_SECRET } = process.env;
 
@@ -10,7 +11,11 @@ const { JWT_SECRET } = process.env;
 export class AuthService {
 	constructor(private readonly userRepository: UserRepository) {}
 
-	async login(email: string, password: string): Promise<string> {
+	async login(
+		context: TContext,
+		email: string,
+		password: string,
+	): Promise<string> {
 		const existingUser = await this.userRepository.findOneByEmail(email);
 		if (!existingUser) {
 			throw error.INVALID_EMAIL;

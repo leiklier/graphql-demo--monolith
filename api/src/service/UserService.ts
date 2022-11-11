@@ -1,4 +1,5 @@
 import { Service } from 'typedi';
+import { TContext } from '../context';
 import { User } from '../entity/User';
 import { UserRepository } from '../repository/UserRepository';
 
@@ -6,15 +7,19 @@ import { UserRepository } from '../repository/UserRepository';
 export class UserService {
 	constructor(private readonly userRepository: UserRepository) {}
 
-	async getOneByEmail(email: string): Promise<User | null> {
+	async getOneByEmail(context: TContext, email: string): Promise<User | null> {
 		return this.userRepository.findOneByEmail(email);
 	}
 
-	async getSelfById(authenticatedUserId: string | null): Promise<User | null> {
-		if (!authenticatedUserId) {
+	async getSelf(context: TContext): Promise<User | null> {
+		if (!context.authenticatedUserId) {
 			return null;
 		}
 
-		return this.userRepository.findOneById(authenticatedUserId);
+		return this.userRepository.findOneById(context.authenticatedUserId);
+	}
+
+	async getAll(context: TContext): Promise<User[]> {
+		return this.userRepository.findAll();
 	}
 }

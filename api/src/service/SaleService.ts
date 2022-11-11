@@ -1,4 +1,5 @@
 import { Service } from 'typedi';
+import { TContext } from '../context';
 import { Book } from '../entity/Book';
 import { error } from '../error';
 import { UserRepository } from '../repository/UserRepository';
@@ -32,14 +33,18 @@ export class SaleService {
 		};
 	}
 
-	async sellBookSelf(
+	async sellOwnBook(
+		context: TContext,
 		bookId: string,
-		authenticatedUserId: string | null,
 	): Promise<{ message: string; bookSold: Book | null }> {
-		if (!authenticatedUserId) {
+		if (!context.authenticatedUserId) {
 			throw new Error(error.NOT_AUTHENTICATED);
 		}
-		return this.sellBook(bookId, authenticatedUserId, authenticatedUserId);
+		return this.sellBook(
+			bookId,
+			context.authenticatedUserId,
+			context.authenticatedUserId,
+		);
 	}
 
 	async buyBook(
@@ -67,13 +72,17 @@ export class SaleService {
 		};
 	}
 
-	async buyBookSelf(
+	async buyOwnBook(
+		context: TContext,
 		bookId: string,
-		authenticatedUserId: string | null,
 	): Promise<{ message: string; bookBought: Book | null }> {
-		if (!authenticatedUserId) {
+		if (!context.authenticatedUserId) {
 			throw new Error(error.NOT_AUTHENTICATED);
 		}
-		return this.buyBook(bookId, authenticatedUserId, authenticatedUserId);
+		return this.buyBook(
+			bookId,
+			context.authenticatedUserId,
+			context.authenticatedUserId,
+		);
 	}
 }

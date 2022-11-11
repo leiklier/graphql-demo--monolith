@@ -4,9 +4,9 @@ import { BooksTable } from '../components/BooksTable';
 import { NavBar } from '../components/NavBar';
 import {
 	useBooksInStoreQuery,
-	useBuyBookMutation,
+	useBuyOwnBookMutation,
 	useMyBooksQuery,
-	useSellBookMutation,
+	useSellOwnBookMutation,
 	useUserInfoQuery,
 } from '../graphql/generated';
 
@@ -14,10 +14,10 @@ export const BuyBooksPage: React.FC = () => {
 	const { data: userInfoData } = useUserInfoQuery();
 	const { data: myBooksData } = useMyBooksQuery();
 	const { data: booksInStoreData } = useBooksInStoreQuery();
-	const [sellBook] = useSellBookMutation({
+	const [sellOwnBook] = useSellOwnBookMutation({
 		update(cache, result) {
 			cache.evict({ fieldName: 'booksInStore' });
-			const userId = result.data?.sellBook.userSelling?.id;
+			const userId = result.data?.sellOwnBook.userSelling?.id;
 			if (userId) {
 				cache.evict({
 					id: `User:${userId}`,
@@ -26,10 +26,10 @@ export const BuyBooksPage: React.FC = () => {
 			}
 		},
 	});
-	const [buyBook] = useBuyBookMutation({
+	const [buyOwnBook] = useBuyOwnBookMutation({
 		update(cache, result) {
 			cache.evict({ fieldName: 'booksInStore' });
-			const userId = result.data?.buyBook.userBuying?.id;
+			const userId = result.data?.buyOwnBook.userBuying?.id;
 			if (userId) {
 				cache.evict({
 					id: `User:${userId}`,
@@ -54,7 +54,7 @@ export const BuyBooksPage: React.FC = () => {
 							text: 'Sell',
 							color: 'red',
 							onClick: (bookId: string) =>
-								sellBook({ variables: { sellBookInput: { bookId } } }),
+								sellOwnBook({ variables: { sellOwnBookInput: { bookId } } }),
 						}}
 					/>
 					<Heading as="h3">Books in store:</Heading>
@@ -64,7 +64,7 @@ export const BuyBooksPage: React.FC = () => {
 							text: 'Buy',
 							color: 'green',
 							onClick: (bookId: string) =>
-								buyBook({ variables: { buyBookInput: { bookId } } }),
+								buyOwnBook({ variables: { buyOwnBookInput: { bookId } } }),
 						}}
 					/>
 				</Flex>

@@ -12,9 +12,7 @@ export class BookResolver {
 	@Query((returns) => [Book], {
 		description: 'Get all books that are available in the store',
 	})
-	async booksInStore(
-		@Ctx() { authenticatedUserId }: TContext,
-	): Promise<Book[]> {
-		return this.bookService.getBooksInStore(authenticatedUserId);
+	async booksInStore(@Ctx() context: TContext): Promise<Book[]> {
+		return this.bookService.getBooksInStore(context);
 	}
 }

@@ -1,0 +1,11 @@
+mutation buyOwnBook($buyOwnBookInput: BuyOwnBookInput!) {
+	buyOwnBook(input: $buyOwnBookInput) {
+		message
+		userBuying {
+			id
+			booksOwning {
+				id
+			}
+		}
+	}
+}

@@ -2,16 +2,18 @@ import { Field, InputType, ObjectType } from 'type-graphql';
 import { Book } from '../entity/Book';
 import { User } from '../entity/User';
 
-@InputType({ description: 'The input for executing the `sellBook` Mutation' })
-export class SellBookInput {
+@InputType({
+	description: 'The input for executing the `sellOwnBook` Mutation',
+})
+export class SellOwnBookInput {
 	@Field({ description: 'ID of the Book that should be sold' })
 	bookId: string;
 }
 
 @ObjectType({
-	description: 'The returned payload for executing the `sellBook` Mutation',
+	description: 'The returned payload for executing the `sellOwnBook` Mutation',
 })
-export class SellBookPayload {
+export class SellOwnBookPayload {
 	@Field({ description: 'Feedback on the outcome of the sale' })
 	message: string;
 
@@ -28,16 +30,16 @@ export class SellBookPayload {
 	bookSold: Book | null;
 }
 
-@InputType({ description: 'The input for executing the `buyBook` Mutation' })
-export class BuyBookInput {
+@InputType({ description: 'The input for executing the `buyOwnBook` Mutation' })
+export class BuyOwnBookInput {
 	@Field({ description: 'ID of the Book that should be bought' })
 	bookId: string;
 }
 
 @ObjectType({
-	description: 'The returned payload for executing the `buyBook` Mutation',
+	description: 'The returned payload for executing the `buyOwnBook` Mutation',
 })
-export class BuyBookPayload {
+export class BuyOwnBookPayload {
 	@Field({ description: 'Feedback on the outcome of the sale' })
 	message: string;
 

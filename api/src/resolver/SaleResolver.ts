@@ -1,11 +1,11 @@
-import { Arg, Ctx, Mutation, Resolver } from 'type-graphql';
+import { Arg, Authorized, Ctx, Mutation, Resolver } from 'type-graphql';
 import { Service } from 'typedi';
 import { TContext } from '../context';
 import {
-	BuyBookInput,
-	BuyBookPayload,
-	SellBookInput,
-	SellBookPayload,
+	BuyOwnBookInput,
+	BuyOwnBookPayload,
+	SellOwnBookInput,
+	SellOwnBookPayload,
 } from '../interface/sale';
 import { SaleService } from '../service/SaleService';
 import { UserService } from '../service/UserService';
@@ -18,19 +18,19 @@ export class SaleResolver {
 		private readonly userService: UserService,
 	) {}
 
-	@Mutation((returns) => SellBookPayload, {
+	@Mutation((returns) => SellOwnBookPayload, {
 		description: 'Sell a Book that you own',
 	})
-	async sellBook(
-		@Ctx() { authenticatedUserId }: TContext,
-		@Arg('input') input: SellBookInput,
-	): Promise<SellBookPayload> {
-		const { message, bookSold } = await this.saleService.sellBookSelf(
+	async sellOwnBook(
+		@Ctx() context: TContext,
+		@Arg('input') input: SellOwnBookInput,
+	): Promise<SellOwnBookPayload> {
+		const { message, bookSold } = await this.saleService.sellOwnBook(
+			context,
 			input.bookId,
-			authenticatedUserId,
 		);
 
-		const userSelling = await this.userService.getSelfById(authenticatedUserId);
+		const userSelling = await this.userService.getSelf(context);
 
 		return {
 			message,
@@ -39,19 +39,19 @@ export class SaleResolver {
 		};
 	}
 
-	@Mutation((returns) => BuyBookPayload, {
-		description: 'Sell a Book',
+	@Mutation((returns) => BuyOwnBookPayload, {
+		description: 'Buy a Book for yourself',
 	})
-	async buyBook(
-		@Ctx() { authenticatedUserId }: TContext,
-		@Arg('input') input: BuyBookInput,
-	): Promise<BuyBookPayload> {
-		const { message, bookBought } = await this.saleService.buyBookSelf(
+	async buyOwnBook(
+		@Ctx() context: TContext,
+		@Arg('input') input: BuyOwnBookInput,
+	): Promise<BuyOwnBookPayload> {
+		const { message, bookBought } = await this.saleService.buyOwnBook(
+			context,
 			input.bookId,
-			authenticatedUserId,
 		);
 
-		const userBuying = await this.userService.getSelfById(authenticatedUserId);
+		const userBuying = await this.userService.getSelf(context);
 
 		return {
 			message,

@@ -28,6 +28,10 @@ export class UserRepository {
 		return (await this.userLoader.loadMany(ids)) as User[];
 	}
 
+	async findAll(): Promise<User[]> {
+		return this.userRepository.createQueryBuilder('user').getMany();
+	}
+
 	async findOneByEmail(email: string): Promise<User | null> {
 		return this.userRepository
 			.createQueryBuilder('user')

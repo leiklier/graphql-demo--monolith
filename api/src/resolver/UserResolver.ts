@@ -16,19 +16,27 @@ export class UserResolver {
 
 	@FieldResolver()
 	async booksOwning(
-		@Root() user: User,
-		@Ctx() { authenticatedUserId }: TContext,
+		@Root() thisUser: User,
+		@Ctx() context: TContext,
 	): Promise<Book[]> {
-		return this.bookService.getBooksOwnedByUser(user.id, authenticatedUserId);
+		return this.bookService.getBooksOwnedByUser(context, thisUser.id);
 	}
 
 	@Query((returns) => User, { nullable: true })
-	async me(@Ctx() { authenticatedUserId }: TContext): Promise<User | null> {
-		return this.userService.getSelfById(authenticatedUserId);
+	async me(@Ctx() context: TContext): Promise<User | null> {
+		return this.userService.getSelf(context);
 	}
 
 	@Query((returns) => User)
-	async user(@Arg('email') email: string): Promise<User | null> {
-		return this.userService.getOneByEmail(email);
+	async userByEmail(
+		@Ctx() context: TContext,
+		@Arg('email') email: string,
+	): Promise<User | null> {
+		return this.userService.getOneByEmail(context, email);
+	}
+
+	@Query((returns) => [User])
+	async allUsers(@Ctx() context: TContext): Promise<User[]> {
+		return this.userService.getAll(context);
 	}
 }
