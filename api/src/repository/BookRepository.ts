@@ -1,39 +1,48 @@
 import DataLoader from 'dataloader';
 import { Service } from 'typedi';
-import { PostgresDataSource } from '../database/datasource';
+import { getOrm } from '../database';
 import { Book } from '../entity/Book';
 
 @Service()
 export class BookRepository {
-	bookRepository = PostgresDataSource.getRepository(Book);
+	em = getOrm().em.fork();
 
 	// DataLoader is required to avoid N+1 issue
 	// with GraphQL resolvers. It is destroyed after
 	// each request
-	bookLoader = new DataLoader((bookIds: readonly string[]) => {
-		return this.bookRepository
-			.createQueryBuilder('book')
-			.where('book.id IN(:...bookIds)', { bookIds })
-			.getMany();
-	});
+	bookLoader = new DataLoader(
+		async (bookIds: readonly string[]) => {
+			const books = await this.em
+				.createQueryBuilder(Book)
+				.select('*')
+				.where({ id: { $in: bookIds } })
+				.getResultList();
+
+			return bookIds.map(
+				(bookId) => books.find((book) => book.id === bookId) || null,
+			);
+		},
+		{ cache: false },
+	);
 
 	async findOneById(id: string): Promise<Book | null> {
-		return (await this.bookLoader.load(id)) as Book;
+		return this.bookLoader.load(id);
 	}
 
-	async findManyById(ids: string[]): Promise<Book[]> {
+	async findManyById(ids: string[]): Promise<Array<Book | null>> {
+		// TODO: Fix type casting
 		return (await this.bookLoader.loadMany(ids)) as Book[];
 	}
 
 	async findManyByUserId(userId: string): Promise<Book[]> {
-		return this.bookRepository
-			.createQueryBuilder('book')
-			.leftJoin('book.usersOwnedBy', 'user')
-			.where('user.id = :userId', { userId })
-			.getMany();
+		return this.em
+			.createQueryBuilder(Book)
+			.select('*')
+			.where({ usersOwnedBy: userId })
+			.getResultList();
 	}
 
 	async findAll(): Promise<Book[]> {
-		return this.bookRepository.find();
+		return this.em.createQueryBuilder(Book).select('*').getResultList();
 	}
 }

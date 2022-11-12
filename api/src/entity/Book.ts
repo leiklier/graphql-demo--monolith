@@ -1,26 +1,32 @@
+import {
+	Collection,
+	Entity,
+	ManyToMany,
+	PrimaryKey,
+	Property,
+} from '@mikro-orm/core';
 import { Field, ID, ObjectType } from 'type-graphql';
-import { Column, Entity, ManyToMany, PrimaryGeneratedColumn } from 'typeorm';
 import { User } from './User';
 
 @ObjectType({ description: 'A book that can be bought for the given priceUSD' })
 @Entity()
 export class Book {
 	@Field((type) => ID, { description: 'A unique identifier for the book' })
-	@PrimaryGeneratedColumn('uuid')
+	@PrimaryKey({ type: 'uuid' })
 	readonly id: string;
 
 	@Field({ description: 'The title of the book' })
-	@Column()
+	@Property()
 	title: string;
 
 	@Field({ description: 'The person who wrote the book' })
-	@Column()
+	@Property()
 	author: string;
 
 	@Field({ description: 'The price of the book given in USD' })
-	@Column()
+	@Property()
 	priceUSD: number;
 
-	@ManyToMany((relationTo) => User, (user) => user.booksOwning)
-	usersOwnedBy: User[];
+	@ManyToMany(() => User, (user) => user.booksOwning)
+	usersOwnedBy: Collection<User> = new Collection<User>(this);
 }

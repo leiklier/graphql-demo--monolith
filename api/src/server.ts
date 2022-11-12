@@ -13,20 +13,18 @@ import http from 'http';
 import 'reflect-metadata';
 import { buildSchema, ResolverData } from 'type-graphql';
 import { UserResolver } from './resolver/UserResolver';
-import { initializeDatabases } from './database/initialize';
 import Container from 'typedi';
 import { context, TContext } from './context';
 import { AuthResolver } from './resolver/AuthResolver';
 import { BookResolver } from './resolver/BookResolver';
 import { SaleResolver } from './resolver/SaleResolver';
+import { initializeDatabase } from './database';
 
 const PORT = 4000;
 const { NODE_ENV } = process.env;
 
 async function main() {
-	console.log('Initializing server...');
-
-	await initializeDatabases(NODE_ENV || 'production');
+	await initializeDatabase(NODE_ENV as string);
 
 	const graphqlSchema = await buildSchema({
 		resolvers: [AuthResolver, SaleResolver, UserResolver, BookResolver],

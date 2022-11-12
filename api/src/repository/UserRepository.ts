@@ -1,89 +1,121 @@
 import DataLoader from 'dataloader';
 import { Service } from 'typedi';
-import { PostgresDataSource } from '../database/datasource';
+import { getEntityManager } from '../database';
 import { Book } from '../entity/Book';
 import { User } from '../entity/User';
 
 @Service()
 export class UserRepository {
-	// These are specific to implementation with TypeORM:
-	userRepository = PostgresDataSource.getRepository(User);
-	bookRepository = PostgresDataSource.getRepository(Book);
-
 	// DataLoader is required to avoid N+1 issue
 	// with GraphQL resolvers. It is destroyed after
 	// each request
-	userLoader = new DataLoader((userIds: readonly string[]) => {
-		return this.userRepository
-			.createQueryBuilder('user')
-			.where('user.id IN(:...userIds)', { userIds })
-			.getMany();
-	});
+	userLoader = new DataLoader(
+		async (userIds: readonly string[]) => {
+			const users = await getEntityManager()
+				.createQueryBuilder(User)
+				.select('*')
+				.where({ id: { $in: userIds } })
+				.getResultList();
+
+			return userIds.map(
+				(userId) => users.find((user) => user.id === userId) || null,
+			);
+		},
+		{ cache: false },
+	);
 
 	async findOneById(id: string): Promise<User | null> {
-		return (await this.userLoader.load(id)) as User;
+		return await this.userLoader.load(id);
 	}
 
-	async findManyById(ids: string[]): Promise<User[]> {
+	async findManyById(ids: string[]): Promise<Array<User | null>> {
+		// TODO: Fix type casting
 		return (await this.userLoader.loadMany(ids)) as User[];
 	}
 
 	async findAll(): Promise<User[]> {
-		return this.userRepository.createQueryBuilder('user').getMany();
+		return getEntityManager()
+			.createQueryBuilder(User)
+			.select('*')
+			.getResultList();
 	}
 
 	async findOneByEmail(email: string): Promise<User | null> {
-		return this.userRepository
-			.createQueryBuilder('user')
-			.where('user.email = :email', { email })
-			.getOne();
+		return getEntityManager()
+			.createQueryBuilder(User)
+			.select('*')
+			.where({ email })
+			.getSingleResult();
 	}
 
 	async removeBookOwning(userId: string, bookId: string): Promise<Book | null> {
-		const bookOwnedByUser = await this.bookRepository
-			.createQueryBuilder('book')
-			.innerJoin('book.usersOwnedBy', 'user')
-			.where('book.id = :bookId', { bookId })
-			.andWhere('user.id = :userId', { userId })
-			.getOne();
+		const em = getEntityManager();
+		const user = await em
+			.createQueryBuilder(User)
+			.select('*')
+			.where({ id: userId })
+			.getSingleResult();
 
-		if (!bookOwnedByUser) {
+		if (!user) {
 			return null;
 		}
 
-		this.userRepository
-			.createQueryBuilder('user')
-			.relation(User, 'booksOwning')
-			.of(userId)
-			.remove(bookOwnedByUser);
+		const book = await em
+			.createQueryBuilder(Book)
+			.select('*')
+			.where({ id: bookId })
+			.getSingleResult();
 
-		return bookOwnedByUser;
+		if (!book) {
+			return null;
+		}
+
+		await user.booksOwning.init();
+		const isAlreadyOwning = user.booksOwning.contains(book);
+		if (!isAlreadyOwning) {
+			return null;
+		}
+
+		user.booksOwning.init();
+		user.booksOwning.remove(book);
+		await em.persist(user).flush();
+
+		return book;
 	}
 
 	async addBookOwning(userId: string, bookId: string): Promise<Book | null> {
-		const isBookOwnedByUser = !!(await this.bookRepository
-			.createQueryBuilder('book')
-			.innerJoin('book.usersOwnedBy', 'user')
-			.where('book.id = :bookId', { bookId })
-			.andWhere('user.id = :userId', { userId })
-			.getOne());
+		const em = getEntityManager();
 
-		if (isBookOwnedByUser) {
-			// Cannot buy book you already own:
+		const user = await em
+			.createQueryBuilder(User)
+			.select('*')
+			.where({ id: userId })
+			.getSingleResult();
+
+		if (!user) {
 			return null;
 		}
 
-		const bookExisting = await this.bookRepository
-			.createQueryBuilder('book')
-			.where('book.id = :bookId', { bookId })
-			.getOne();
+		const book = await em
+			.createQueryBuilder(Book)
+			.select('*')
+			.where({ id: bookId })
+			.getSingleResult();
 
-		this.userRepository
-			.createQueryBuilder('user')
-			.relation(User, 'booksOwning')
-			.of(userId)
-			.add(bookExisting);
+		if (!book) {
+			return null;
+		}
 
-		return bookExisting;
+		await user.booksOwning.init();
+		const isAlreadyOwning = user.booksOwning.contains(book);
+
+		if (isAlreadyOwning) {
+			return null;
+		}
+
+		user.booksOwning.add(book);
+		await em.persist(user).flush();
+
+		return book;
 	}
 }

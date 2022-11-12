@@ -33,7 +33,7 @@ USER root
 # Install packages before bundling
 # to take advantage of cached layers
 COPY --chown=node:node \
-    package.json package-lock.json tsconfig.json ./
+    package.json package-lock.json tsconfig.json jest.config.js ./
 RUN npm install && npm cache clean --force
 
 # NB: Notice that no application is bundled!

@@ -1,37 +1,37 @@
-import { Field, ID, ObjectType } from 'type-graphql';
 import {
-	Column,
+	Collection,
 	Entity,
-	JoinTable,
 	ManyToMany,
-	PrimaryGeneratedColumn,
-} from 'typeorm';
+	PrimaryKey,
+	Property,
+} from '@mikro-orm/core';
+import { Field, ID, ObjectType } from 'type-graphql';
+
 import { Book } from './Book';
 
 @ObjectType()
 @Entity()
 export class User {
 	@Field((type) => ID)
-	@PrimaryGeneratedColumn('uuid')
+	@PrimaryKey({ type: 'uuid' })
 	readonly id: string;
 
 	@Field()
-	@Column()
+	@Property()
 	firstName: string;
 
 	@Field()
-	@Column()
+	@Property()
 	lastName: string;
 
 	@Field()
-	@Column()
+	@Property({ unique: true })
 	email: string;
 
-	@Column()
+	@Property()
 	hashedPassword: string;
 
 	@Field((of) => [Book])
-	@ManyToMany((relationTo) => Book, (book) => book.usersOwnedBy)
-	@JoinTable()
-	booksOwning: Book[];
+	@ManyToMany({ entity: 'Book', owner: true })
+	booksOwning: Collection<Book> = new Collection<Book>(this);
 }

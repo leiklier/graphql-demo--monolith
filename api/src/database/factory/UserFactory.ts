@@ -1,13 +1,11 @@
-import { Factory, FactorizedAttrs } from '@jorgebodega/typeorm-factory';
+import { Factory, Faker } from '@mikro-orm/seeder';
 import { User } from '../../entity/User';
-import { faker } from '@faker-js/faker';
-import { PostgresDataSource } from '../datasource';
 import bcrypt from 'bcryptjs';
+
 export class UserFactory extends Factory<User> {
-	protected entity = User;
-	// TODO: Find a way to move DataSource out
-	protected dataSource = PostgresDataSource;
-	protected attrs(): FactorizedAttrs<User> {
+	model = User;
+
+	definition(faker: Faker): Partial<User> {
 		const salt = bcrypt.genSaltSync(10);
 
 		const password = 'password';
