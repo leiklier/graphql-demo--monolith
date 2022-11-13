@@ -22,12 +22,18 @@ export class UserResolver {
 		return this.bookService.getBooksOwnedByUser(context, thisUser.id);
 	}
 
-	@Query((returns) => User, { nullable: true })
+	@Query((returns) => User, {
+		description: 'Get the authenticated User',
+		nullable: true,
+	})
 	async me(@Ctx() context: TContext): Promise<User | null> {
 		return this.userService.getSelf(context);
 	}
 
-	@Query((returns) => User)
+	@Query((returns) => User, {
+		description: 'Get a User with the provided `email`',
+		nullable: true,
+	})
 	async userByEmail(
 		@Ctx() context: TContext,
 		@Arg('email') email: string,
@@ -35,7 +41,9 @@ export class UserResolver {
 		return this.userService.getOneByEmail(context, email);
 	}
 
-	@Query((returns) => [User])
+	@Query((returns) => [User], {
+		description: 'Get all Users',
+	})
 	async allUsers(@Ctx() context: TContext): Promise<User[]> {
 		return this.userService.getAll(context);
 	}

@@ -12,11 +12,11 @@ export class UserService {
 	}
 
 	async getSelf(context: TContext): Promise<User | null> {
-		if (!context.authenticatedUserId) {
+		if (!context.authenticatedUser) {
 			return null;
 		}
 
-		return this.userRepository.findOneById(context.authenticatedUserId);
+		return this.userRepository.findOneById(context.authenticatedUser.id);
 	}
 
 	async getAll(context: TContext): Promise<User[]> {

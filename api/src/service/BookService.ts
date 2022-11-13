@@ -1,6 +1,7 @@
 import { Service } from 'typedi';
 import { TContext } from '../context';
 import { Book } from '../entity/Book';
+import { AuthRole } from '../interface/auth';
 import { BookRepository } from '../repository/BookRepository';
 
 @Service()
@@ -13,9 +14,9 @@ export class BookService {
 
 	async getBooksInStore(context: TContext): Promise<Book[]> {
 		let bookIdsOwnedBySelf: string[] = [];
-		if (context.authenticatedUserId) {
+		if (context.authenticatedUser) {
 			bookIdsOwnedBySelf = (
-				await this.bookRepository.findManyByUserId(context.authenticatedUserId)
+				await this.bookRepository.findManyByUserId(context.authenticatedUser.id)
 			).map((book) => book.id);
 		}
 
@@ -32,14 +33,22 @@ export class BookService {
 		context: TContext,
 		userId: string,
 	): Promise<Book[]> {
-		return this.bookRepository.findManyByUserId(userId);
+		const isAdmin = context.authenticatedUser?.authRoles.includes(
+			AuthRole.Admin,
+		);
+		const isSelf = context.authenticatedUser?.id === userId;
+
+		if (isSelf || isAdmin) {
+			return this.bookRepository.findManyByUserId(userId);
+		}
+		return [];
 	}
 
 	async getBooksOwnedBySelf(context: TContext): Promise<Book[]> {
-		if (!context.authenticatedUserId) {
+		if (!context.authenticatedUser) {
 			return [];
 		}
 
-		return this.getBooksOwnedByUser(context, context.authenticatedUserId);
+		return this.getBooksOwnedByUser(context, context.authenticatedUser.id);
 	}
 }

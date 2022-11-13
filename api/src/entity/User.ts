@@ -1,11 +1,13 @@
 import {
 	Collection,
 	Entity,
+	Enum as EnumProperty,
 	ManyToMany,
 	PrimaryKey,
 	Property,
 } from '@mikro-orm/core';
 import { Field, ID, ObjectType } from 'type-graphql';
+import { AuthRole } from '../interface/auth';
 
 import { Book } from './Book';
 
@@ -30,6 +32,9 @@ export class User {
 
 	@Property()
 	hashedPassword: string;
+
+	@EnumProperty({ items: () => AuthRole, array: true })
+	authRoles: AuthRole[];
 
 	@Field((of) => [Book])
 	@ManyToMany({ entity: 'Book', owner: true })

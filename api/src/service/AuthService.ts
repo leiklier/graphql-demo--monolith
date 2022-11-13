@@ -2,8 +2,8 @@ import { Service } from 'typedi';
 import { error } from '../error';
 import { UserRepository } from '../repository/UserRepository';
 import bcrypt from 'bcryptjs';
-import jwt from 'jsonwebtoken';
 import { TContext } from '../context';
+import { encodeToken } from '../util/token';
 
 const { JWT_SECRET } = process.env;
 
@@ -15,7 +15,7 @@ export class AuthService {
 		context: TContext,
 		email: string,
 		password: string,
-	): Promise<string> {
+	): Promise<string | null> {
 		const existingUser = await this.userRepository.findOneByEmail(email);
 		if (!existingUser) {
 			throw error.INVALID_EMAIL;
@@ -30,17 +30,7 @@ export class AuthService {
 		}
 
 		// 30 days expiry
-		const expiresAt: number = Date.now() + 1000 * 60 * 60 * 24 * 30;
-		const token = jwt.sign(
-			{
-				payload: {
-					userId: existingUser.id,
-				},
-				exp: Math.floor(expiresAt / 1000),
-			},
-			JWT_SECRET!,
-		);
-
+		const token = encodeToken(existingUser, 30);
 		return token;
 	}
 }

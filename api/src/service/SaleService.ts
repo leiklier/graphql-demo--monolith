@@ -9,15 +9,15 @@ export class SaleService {
 	constructor(private readonly userRepository: UserRepository) {}
 
 	async sellBook(
-		bookId: string,
+		context: TContext,
 		customerUserId: string,
-		authenticatedUserId: string | null,
+		bookId: string,
 	): Promise<{ message: string; bookSold: Book | null }> {
-		if (!authenticatedUserId) {
+		if (!context.authenticatedUser) {
 			throw new Error(error.NOT_AUTHENTICATED);
 		}
 
-		const isAuthorized = customerUserId === authenticatedUserId;
+		const isAuthorized = customerUserId === context.authenticatedUser.id;
 		if (!isAuthorized) {
 			throw new Error(error.NOT_AUTHORIZED);
 		}
@@ -37,26 +37,22 @@ export class SaleService {
 		context: TContext,
 		bookId: string,
 	): Promise<{ message: string; bookSold: Book | null }> {
-		if (!context.authenticatedUserId) {
+		if (!context.authenticatedUser) {
 			throw new Error(error.NOT_AUTHENTICATED);
 		}
-		return this.sellBook(
-			bookId,
-			context.authenticatedUserId,
-			context.authenticatedUserId,
-		);
+		return this.sellBook(context, context.authenticatedUser.id, bookId);
 	}
 
 	async buyBook(
-		bookId: string,
+		context: TContext,
 		customerUserId: string,
-		authenticatedUserId: string | null,
+		bookId: string,
 	): Promise<{ message: string; bookBought: Book | null }> {
-		if (!authenticatedUserId) {
+		if (!context.authenticatedUser) {
 			throw new Error(error.NOT_AUTHENTICATED);
 		}
 
-		const isAuthorized = customerUserId === authenticatedUserId;
+		const isAuthorized = customerUserId === context.authenticatedUser.id;
 		if (!isAuthorized) {
 			throw new Error(error.NOT_AUTHORIZED);
 		}
@@ -76,13 +72,9 @@ export class SaleService {
 		context: TContext,
 		bookId: string,
 	): Promise<{ message: string; bookBought: Book | null }> {
-		if (!context.authenticatedUserId) {
+		if (!context.authenticatedUser) {
 			throw new Error(error.NOT_AUTHENTICATED);
 		}
-		return this.buyBook(
-			bookId,
-			context.authenticatedUserId,
-			context.authenticatedUserId,
-		);
+		return this.buyBook(context, context.authenticatedUser.id, bookId);
 	}
 }
